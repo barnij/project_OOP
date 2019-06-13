@@ -1,6 +1,6 @@
 import pygame
 from settings import ARENAWIDTH, ARENAHEIGHT, ARENAWIDTH_Q, ARENAHEIGHT_Q
-from moving import Direction
+from enums import Direction
 from otherfunctions import rot_center
 from textures import img
 
@@ -12,14 +12,16 @@ class Character(pygame.sprite.Sprite):
         super().__init__()
         self.org_image = None
         self.image = None
+        self.direction = Direction.GORA
         self.rect = pygame.Rect((0, 0), [40, 40])
         self.rect.x = ARENAWIDTH//2
         self.rect.y = ARENAHEIGHT//2
-        self.health = 100
+        self.hp = 100
 
     def update(self, x: int, y: int, d: Direction):
         self.rect.x += x
         self.rect.y += y
+        self.direction = d
 
         if self.rect.x > ARENAWIDTH_Q:
             self.rect.x = ARENAWIDTH_Q
@@ -53,6 +55,5 @@ class Player(Character):
     def __init__(self):
         super().__init__()
         self.image = self.org_image = img.player
-        self.health = 100
-        self.choosenweapon =
-
+        self.hp = 100
+        self.selectedgun = None

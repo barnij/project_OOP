@@ -48,12 +48,3 @@ class Character(pygame.sprite.Sprite):
             self.image = rot_center(self.org_image, 135)
         elif d is Direction.DOLPRAWO:
             self.image = rot_center(self.org_image, -135)
-
-
-class Player(Character):
-    """Klasa dla gracza"""
-    def __init__(self):
-        super().__init__()
-        self.image = self.org_image = img.player
-        self.hp = 100
-        self.selectedgun = None

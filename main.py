@@ -1,5 +1,6 @@
 import pygame
-from characters import Player
+from blast import KnifeBlast
+from player import Player
 from interface import ManageInterface
 from interactive import move, changeweapon
 from settings import *
@@ -22,9 +23,13 @@ inter.add_gun(pistol, 1)
 inter.make_active_square(1)
 inter.add_gun(mp40, 3)
 inter.make_active_square(3)
+knife_blast = KnifeBlast(gracz, [20, 4])
 
 all_sprites_list = pygame.sprite.Group()
 all_sprites_list.add(gracz)
+
+all_blasts = pygame.sprite.Group()
+all_blasts.add(knife_blast)
 
 carryOn = True
 clock = pygame.time.Clock()
@@ -41,11 +46,17 @@ while carryOn:
     move(keys, gracz)
     changeweapon(keys, inter, gracz)
 
+    all_blasts.update()
 
     # Drawing on Screen
     inter.draw(screen, gracz)
 
     all_sprites_list.draw(screen)
+
+    if pygame.sprite.collide_rect(knife_blast, gracz):
+        pygame.draw.circle(screen, (100, 200, 200), [100, 100], 15)
+
+    all_blasts.draw(screen)
 
     # Refresh Screen
     pygame.display.flip()

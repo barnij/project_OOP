@@ -16,6 +16,9 @@ class Textures:
         self.mp40 = pygame.image.load('images/mp40_gun4.png')
         self.mp40_mini = pygame.image.load('images/gun4_mini.png')
         self.mp40_square = pygame.image.load('images/gun4_square.png')
+        self.tompson = pygame.image.load('images/tompson_gun3.png')
+        self.tompson_mini = pygame.image.load('images/gun3_mini.png')
+        self.tompson_square = pygame.image.load('images/gun3_square.png')
 
 
 img = Textures()

@@ -17,3 +17,14 @@ class Squares(Enum):
     SECOND = (103, 604)
     THIRD = (203, 604)
     FOURTH = (303, 604)
+
+
+class Color(Enum):
+    RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+    YELLOW = (255, 255, 0)
+    SILVER = (192, 192, 192)
+    GRAY = (128, 128, 128)
+    PURPLE = (128, 0, 128)
+    ORANGE = (255, 165, 0)

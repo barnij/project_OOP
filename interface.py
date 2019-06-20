@@ -1,4 +1,4 @@
-from enums import Squares, Direction
+from enums import Squares, Direction, Color
 import pygame
 from abc import ABC, abstractmethod
 from textures import img
@@ -50,17 +50,40 @@ class HealthBar(Interface):
     def __init__(self, player):
         super().__init__()
         self.player = player
+        self.maxwidth = 300
+        self.image = pygame.Surface([self.maxwidth, 40])
+        self.rect = self.image.get_rect()
+        self.x = 450
+        self.y = 610
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (20, 20, 20), pygame.Rect(120, 120, 60, 60))
+        self.update()
+        color = Color.GREEN.value
+        hp = self.player.hp
+        maxhp = self.player.maxhp
+        if hp < maxhp*0.3:
+            color = Color.RED.value
+        elif hp < maxhp*0.5:
+            color = Color.ORANGE.value
+        elif hp < maxhp*0.7:
+            color = Color.YELLOW.value
+        pygame.draw.rect(screen, color, self.rect)
+
+    def update(self):
+        width = self.player.hp/self.player.maxhp * self.maxwidth
+        self.image = pygame.Surface([width, 40])
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
 
 
 class ManageInterface:
     def __init__(self, player):
         self.squares = [Square(x.value) for x in Squares]
-        self.select_square(0)
+        self.select_square(0, player)
         self.healthbar = HealthBar(player)
         self.selected_square = 0
+        self.last_attack = 0
 
     def make_active_square(self, i):
         self.squares[i].active = True
@@ -68,11 +91,12 @@ class ManageInterface:
     def get_actual_square(self):
         return self.squares[self.selected_square]
 
-    def select_square(self, i):
+    def select_square(self, i, player):
         for t in self.squares:
             t.selected = False
         self.squares[i].selected = True
         self.selected_square = i
+        player.selectedgun = self.squares[i].gun
 
     def add_gun(self, gun, i):
         self.squares[i].gun = gun
@@ -111,3 +135,5 @@ class ManageInterface:
                 i = rot_center(g, -135)
 
             screen.blit(i, (x, y))
+
+        self.healthbar.draw(screen)

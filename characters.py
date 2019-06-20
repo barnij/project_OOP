@@ -16,7 +16,13 @@ class Character(pygame.sprite.Sprite):
         self.rect = pygame.Rect((0, 0), [40, 40])
         self.rect.x = ARENAWIDTH//2
         self.rect.y = ARENAHEIGHT//2
-        self.hp = 100
+        self.maxhp = 1000
+        self.hp = self.maxhp
+
+    def set_position(self, x: int, y: int, d: Direction):
+        self.rect.x = x
+        self.rect.y = y
+        self.direction = d
 
     def update(self, x: int, y: int, d: Direction):
         self.rect.x += x

@@ -1,28 +1,112 @@
 import pygame
 import pygame.gfxdraw
+from enums import Direction
 
 
 class Blast(pygame.sprite.Sprite):
     def __init__(self, owner):
         super().__init__()
+        self.image = None
         self.owner = owner
-
-
-class KnifeBlast(Blast):
-    def __init__(self, owner, vector):
-        super().__init__(owner)
-        self.image = pygame.Surface([20, 20])
-        self.image.fill((100, 200, 200))
-        self.rect = self.image.get_rect()
-        self.rect.x = 20
-        self.rect.y = 20
+        self.time = None
+        self.rect = None
         self.speed = 1
-        self.time = pygame.time.get_ticks()
-        self.vector = vector
+        self.vector = [0, 0]
+        self.timetodestroy = 2000
 
     def update(self):
         if self.time is not None:
-            if pygame.time.get_ticks() - self.time >= 20:
+            if pygame.time.get_ticks() - self.time >= self.timetodestroy:
                 self.kill()
-        self.rect.x += self.vector[0]
-        self.rect.y += self.vector[1]
+
+        if self.rect is not None:
+            self.rect.x += self.vector[0]
+            self.rect.y += self.vector[1]
+
+    def correction(self, direction):
+        """Poprawia vector i pozycję strzału w zależności
+            od podanego kierunku
+        """
+        if direction == Direction.GORA:
+            self.vector = [0, -self.speed]
+            self.rect.x += 15
+            self.rect.y -= 10
+        elif direction == Direction.PRAWO:
+            self.vector = [self.speed, 0]
+            self.rect.y += 20
+        elif direction == Direction.DOL:
+            self.vector = [0, self.speed]
+            self.rect.x -= 20
+        elif direction == Direction.LEWO:
+            self.vector = [-self.speed, 0]
+            self.rect.y -= 20
+        elif direction == Direction.GORALEWO:
+            self.vector = [-self.speed, -self.speed]
+            self.rect.x += 10
+            self.rect.y -= 10
+        elif direction == Direction.GORAPRAWO:
+            self.vector = [self.speed, -self.speed]
+            self.rect.x += 10
+            self.rect.y += 10
+        elif direction == Direction.DOLLEWO:
+            self.vector = [-self.speed, self.speed]
+            self.rect.x -= 10
+            self.rect.y -= 10
+        elif direction == Direction.DOLPRAWO:
+            self.vector = [self.speed, self.speed]
+            self.rect.x -= 10
+            self.rect.y += 10
+
+    def correctionimage(self, direction):
+        if direction == Direction.PRAWO:
+            self.image = pygame.transform.rotate(self.image, -90)
+        elif direction == Direction.LEWO:
+            self.image = pygame.transform.rotate(self.image, 90)
+        elif direction == Direction.GORALEWO:
+            self.image = pygame.transform.rotate(self.image, -45)
+        elif direction == Direction.GORAPRAWO:
+            self.image = pygame.transform.rotate(self.image, 45)
+        elif direction == Direction.DOLLEWO:
+            self.image = pygame.transform.rotate(self.image, -135)
+        elif direction == Direction.DOLPRAWO:
+            self.image = pygame.transform.rotate(self.image, 135)
+
+
+class KnifeBlast(Blast):
+    def __init__(self, owner, direction):
+        super().__init__(owner)
+        self.image = pygame.Surface([30, 30])
+        self.image.set_alpha(50)
+        self.image.fill((192, 192, 192))
+        #self.correctionimage(direction)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.owner.rect.center[0]
+        self.rect.y = self.owner.rect.center[1]
+        self.speed = 1
+        self.time = pygame.time.get_ticks()
+        self.knifecorrection(direction)
+        self.timetodestroy = 150
+
+    def knifecorrection(self, direction):
+        if direction == Direction.GORA:
+            self.rect.y -= 40
+        elif direction == Direction.PRAWO:
+            self.rect.x += 10
+        elif direction == Direction.DOL:
+            self.rect.x -= 30
+            self.rect.y += 10
+        elif direction == Direction.LEWO:
+            self.rect.x -= 40
+            self.rect.y -= 30
+        elif direction == Direction.GORALEWO:
+            self.rect.x -= 20
+            self.rect.y -= 40
+        elif direction == Direction.GORAPRAWO:
+            self.rect.x += 10
+            self.rect.y -= 20
+        elif direction == Direction.DOLLEWO:
+            self.rect.x -= 40
+            self.rect.y -= 10
+        elif direction == Direction.DOLPRAWO:
+            self.rect.x -= 10
+            self.rect.y += 10

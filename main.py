@@ -1,44 +1,26 @@
 import pygame
-from blast import KnifeBlast
 from player import Player
 from interface import ManageInterface
-from interactive import move, moveenemy, changeweapon, attack
+from interactive import move, moveenemies, changeweapon, attack, reacttoblast, attackenemy, spawnweapon, getweapon
 from settings import *
-from weapons import Knife, Pistol, Mp40
-from enemy import Enemy1
+from round import Round1
 
 pygame.init()
 
 size = (SCREENWIDTH, SCREENHEIGHT)
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Gra")
+pygame.display.set_caption("Projekt z przedmiotu \"Programowanie obiektowe\"")
 
 gracz = Player()
-enemy1 = Enemy1(200, 100)
-enemy2 = Enemy1(100, 200)
 inter = ManageInterface(gracz)
-knife = Knife(0, 0)
-pistol = Pistol(0, 0)
-mp40 = Mp40(0, 0)
-inter.add_gun(knife, 0)
-inter.make_active_square(0)
-inter.add_gun(pistol, 1)
-inter.make_active_square(1)
-inter.add_gun(mp40, 3)
-inter.make_active_square(3)
-inter.select_square(0, gracz )
 
-all_sprites_list = pygame.sprite.Group()
-all_sprites_list.add(gracz)
-all_sprites_list.add(enemy1)
-all_sprites_list.add(enemy2)
+weapons = pygame.sprite.Group()
 
-all_blasts = pygame.sprite.Group()
-
-all_enemys = pygame.sprite.Group()
-all_enemys.add(enemy1, enemy2)
+round = Round1(gracz)
+inter.roundtext = round.text
 
 carryOn = True
+win = False
 clock = pygame.time.Clock()
 
 while carryOn:
@@ -50,22 +32,57 @@ while carryOn:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
         carryOn = False
-    move(keys, gracz)
-    attack(keys, gracz, all_blasts, inter)
-    moveenemy(enemy1, gracz, all_sprites_list)
-    moveenemy(enemy2, gracz, all_sprites_list)
-    changeweapon(keys, inter, gracz)
 
-    all_blasts.update()
+    if round.ifnextround():
+        round = round.next_round
+
+        if round is None:
+            win = True
+            break
+        else:
+            inter.roundtext = round.text
+
+    move(keys, gracz)
+    attack(keys, gracz, round.blasts_group, inter)
+    attackenemy(round.enemies_group, gracz, round.blasts_group)
+    moveenemies(round.enemies_group, gracz, round.characters_group)
+    if reacttoblast(round.blasts_group, round.characters_group, inter):
+        break
+    changeweapon(keys, inter, gracz)
+    getweapon(weapons, gracz, inter)
+
+    if pygame.time.get_ticks() - round.last_spawn_weapon > round.time_to_spawn_weapon:
+        spawnweapon(weapons, round.available_weapons)
+        round.last_spawn_weapon = pygame.time.get_ticks()
+
+    round.blasts_group.update()
 
     # Drawing on Screen
     inter.draw(screen, gracz)
-    all_sprites_list.draw(screen)
-    all_blasts.draw(screen)
+    weapons.draw(screen)
+    for enemy in round.enemies_group:
+        enemy.draw(screen)
+    round.characters_group.draw(screen)
+    round.blasts_group.draw(screen)
+
 
     # Refresh Screen
     pygame.display.flip()
 
     clock.tick(FRAMESPERSEC)
+
+if carryOn:
+    if win:
+        inter.win(screen)
+    else:
+        inter.healthbar.draw(screen, True)
+        inter.gameover(screen)
+    pygame.display.flip()
+while carryOn:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            carryOn = False
+        if event.type == pygame.KEYDOWN:
+            carryOn = False
 
 pygame.quit()

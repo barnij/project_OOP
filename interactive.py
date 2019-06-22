@@ -1,6 +1,5 @@
 import pygame
 import random
-from blast import KnifeBlast
 from enums import Direction
 from settings import KROK
 from interface import ManageInterface
@@ -27,6 +26,12 @@ def move(keys, player):
         player.update(KROK, 0, Direction.PRAWO)
     elif keys[pygame.K_d]:
         player.hp -= 10
+
+
+def moveenemies(enemies, player, sprites):
+    enemies = enemies.sprites()
+    for enemy in enemies:
+        moveenemy(enemy, player, sprites)
 
 
 def moveenemy(enemy, player, sprites):
@@ -106,8 +111,45 @@ def movecorrection(enemy, sprites):
 def attack(keys, player, sprites, inter):
     if not keys[pygame.K_SPACE] or pygame.time.get_ticks() - inter.last_attack < 500:
         return
+
+    sq = inter.get_actual_square()
+
+    if sq.ammo <= 0:
+        return
+
+    inter.get_actual_square().ammo -= 1
     sprites.add(player.selectedgun.blast(player, player.direction))
     inter.last_attack = pygame.time.get_ticks()
+
+    if sq.ammo <= 0:
+        sq.active = False
+
+
+def InAreaToAttack(player, enemy) -> bool:
+    d = enemy.direction
+    px = player.rect.x
+    py = player.rect.y
+    ex = enemy.rect.x
+    ey = enemy.rect.y
+    if d == Direction.PRAWO and px > ex and ey <= py <= ey + 40:
+        return True
+    if d == Direction.LEWO and px < ex and ey >= py >= ey - 40:
+        return True
+    if d == Direction.GORA and py < ey and ex <= px <= ex + 40:
+        return True
+    if d == Direction.DOL and py > ey and ex >= px >= ex - 40:
+        return True
+    if d != Direction.PRAWO and d != Direction.LEWO and d != Direction.GORA and d != Direction.DOL:
+        t = random.randrange(1000)
+        return True if t < 50 else False
+    return False
+
+
+def attackenemy(enemies, player, blasts):
+    enemies = enemies.sprites()
+    for enemy in enemies:
+        if InAreaToAttack(player, enemy):
+            enemy.attack(blasts)
 
 
 def changeweapon(keys, inter: ManageInterface, player):
@@ -123,3 +165,38 @@ def changeweapon(keys, inter: ManageInterface, player):
 
     if what is not None:
         inter.select_square(what, player)
+
+
+def reacttoblast(blasts, characters, inter) -> bool:
+    intersecdic = pygame.sprite.groupcollide(characters, blasts, False, False)
+    for character, blastlist in intersecdic.items():
+        for blast in blastlist:
+            if character.enemy is not blast.enemy:
+                if character.enemy:
+                    if character.damage(blast.damage):
+                        inter.addpoints(character.pointsdamage)
+                    else:
+                        inter.addpoints(character.points)
+                else:
+                    if character.damage(blast.damage):
+                        return True
+                blast.kill()
+    return False
+
+
+def spawnweapon(weapons, activeinits):
+    rx = random.randrange(100, 900)
+    ry = random.randrange(100, 500)
+    init = activeinits[random.randrange(len(activeinits))]
+    weapons.add(init(rx, ry))
+
+
+def getweapon(weapons, player, inter):
+    weapons = weapons.sprites()
+    for weapon in weapons:
+        if pygame.sprite.collide_rect(weapon, player):
+            square = inter.get_square_with_gun(weapon)
+            if not square.active:
+                square.active = True
+            square.ammo += weapon.plusammo
+            weapon.kill()

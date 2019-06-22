@@ -1,6 +1,8 @@
 import pygame
 import pygame.gfxdraw
 from enums import Direction
+from enums import Color
+from settings import ARENAHEIGHT, CHAIN
 
 
 class Blast(pygame.sprite.Sprite):
@@ -8,11 +10,13 @@ class Blast(pygame.sprite.Sprite):
         super().__init__()
         self.image = None
         self.owner = owner
+        self.enemy = owner.enemy
         self.time = None
         self.rect = None
         self.speed = 1
         self.vector = [0, 0]
         self.timetodestroy = 2000
+        self.damage = 0
 
     def update(self):
         if self.time is not None:
@@ -20,6 +24,11 @@ class Blast(pygame.sprite.Sprite):
                 self.kill()
 
         if self.rect is not None:
+            arenaheight_q = ARENAHEIGHT - CHAIN - self.image.get_height()
+
+            if self.rect.y > arenaheight_q:
+                self.kill()
+
             self.rect.x += self.vector[0]
             self.rect.y += self.vector[1]
 
@@ -77,7 +86,7 @@ class KnifeBlast(Blast):
         super().__init__(owner)
         self.image = pygame.Surface([30, 30])
         self.image.set_alpha(50)
-        self.image.fill((192, 192, 192))
+        self.image.fill(Color.SILVER.value)
         #self.correctionimage(direction)
         self.rect = self.image.get_rect()
         self.rect.x = self.owner.rect.center[0]
@@ -86,6 +95,7 @@ class KnifeBlast(Blast):
         self.time = pygame.time.get_ticks()
         self.knifecorrection(direction)
         self.timetodestroy = 150
+        self.damage = 120
 
     def knifecorrection(self, direction):
         if direction == Direction.GORA:
@@ -110,3 +120,53 @@ class KnifeBlast(Blast):
         elif direction == Direction.DOLPRAWO:
             self.rect.x -= 10
             self.rect.y += 10
+
+
+class PistolBlast(Blast):
+    def __init__(self, owner, direction):
+        super().__init__(owner)
+        self.image = pygame.Surface([5, 5])
+        self.image.fill(Color.RED.value)
+        # self.correctionimage(direction)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.owner.rect.center[0]
+        self.rect.y = self.owner.rect.center[1]
+        self.speed = 5
+        self.time = pygame.time.get_ticks()
+        self.correction(direction)
+        self.timetodestroy = 1000
+        self.damage = 100
+
+
+class TompsonBlast(Blast):
+    def __init__(self, owner, direction):
+        super().__init__(owner)
+        self.image = pygame.Surface([5, 5])
+        self.image.fill(Color.RED.value)
+        # self.correctionimage(direction)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.owner.rect.center[0]
+        self.rect.y = self.owner.rect.center[1]
+        self.speed = 7
+        self.time = pygame.time.get_ticks()
+        self.correction(direction)
+        self.timetodestroy = 2000
+        self.damage = 200
+
+
+class Mp40Blast(Blast):
+    def __init__(self, owner, direction):
+        super().__init__(owner)
+        self.image = pygame.Surface([10, 10])
+        self.image.fill(Color.RED.value)
+        # self.correctionimage(direction)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.owner.rect.center[0]
+        self.rect.y = self.owner.rect.center[1]
+        self.speed = 6
+        self.time = pygame.time.get_ticks()
+        self.correction(direction)
+        self.timetodestroy = 3000
+        self.damage = 300
+
+

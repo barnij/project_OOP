@@ -28,3 +28,12 @@ class Color(Enum):
     GRAY = (128, 128, 128)
     PURPLE = (128, 0, 128)
     ORANGE = (255, 165, 0)
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+
+
+class Spawn(Enum):
+    FIRST = (100, 50)
+    SECOND = (100, 500)
+    THIRD = (600, 50)
+    FOURTH = (600, 500)

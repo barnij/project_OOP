@@ -12,12 +12,14 @@ class Character(pygame.sprite.Sprite):
         super().__init__()
         self.org_image = None
         self.image = None
+        self.selectedgun = None
         self.direction = Direction.GORA
         self.rect = pygame.Rect((0, 0), [40, 40])
         self.rect.x = ARENAWIDTH//2
         self.rect.y = ARENAHEIGHT//2
         self.maxhp = 1000
         self.hp = self.maxhp
+        self.enemy = False
 
     def set_position(self, x: int, y: int, d: Direction):
         self.rect.x = x
@@ -54,3 +56,6 @@ class Character(pygame.sprite.Sprite):
             self.image = rot_center(self.org_image, 135)
         elif d is Direction.DOLPRAWO:
             self.image = rot_center(self.org_image, -135)
+
+    def damage(self, n):
+        self.hp -= n

@@ -8,3 +8,7 @@ class Player(Character):
         super().__init__()
         self.image = self.org_image = img.player
         self.selectedgun = None
+
+    def damage(self, n):
+        super().damage(n)
+        return True if self.hp <= 0 else False

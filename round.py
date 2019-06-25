@@ -10,8 +10,6 @@ class Round:
         self.characters_group = pygame.sprite.Group()
         self.characters_group.add(player)
         self.available_weapons = []
-        self.points_of_spawn = []
-        self.all_blasts_list = []
         self.time_to_spawn_weapon = 0
         self.last_spawn_weapon = 0
         self.next_round = None
@@ -51,11 +49,11 @@ class Round2(Round):
 class Round3(Round):
     def __init__(self, player):
         super().__init__(player)
-        self.list_of_enemies = [Enemy3(20, 20), Enemy3(80, 20), Enemy2(200, 20), Enemy1(300, 20), Enemy1(700, 500)]
+        self.list_of_enemies = [Enemy3(20, 200), Enemy3(20, 400), Enemy3(20, 20), Enemy3(80, 20), Enemy2(200, 20), Enemy1(300, 20), Enemy1(700, 500)]
         for x in self.list_of_enemies:
             self.characters_group.add(x)
             self.enemies_group.add(x)
-        self.available_weapons = [Knife, Pistol, Mp40]
+        self.available_weapons = [Pistol, Mp40, Tompson]
         self.time_to_spawn_weapon = 9000
         self.next_round = None
         self.text = "round 3"

@@ -126,15 +126,21 @@ class PistolBlast(Blast):
     def __init__(self, owner, direction):
         super().__init__(owner)
         self.image = pygame.Surface([5, 5])
-        self.image.fill(Color.RED.value)
+        self.image.fill(Color.BLACK.value)
         # self.correctionimage(direction)
         self.rect = self.image.get_rect()
         self.rect.x = self.owner.rect.center[0]
         self.rect.y = self.owner.rect.center[1]
-        self.speed = 5
+        if owner.enemy:
+            self.speed = 10
+        else:
+            self.speed = 5
         self.time = pygame.time.get_ticks()
         self.correction(direction)
-        self.timetodestroy = 1000
+        if owner.enemy:
+            self.timetodestroy = 8000
+        else:
+            self.timetodestroy = 1000
         self.damage = 100
 
 
@@ -142,7 +148,7 @@ class TompsonBlast(Blast):
     def __init__(self, owner, direction):
         super().__init__(owner)
         self.image = pygame.Surface([5, 5])
-        self.image.fill(Color.RED.value)
+        self.image.fill(Color.BLACK.value)
         # self.correctionimage(direction)
         self.rect = self.image.get_rect()
         self.rect.x = self.owner.rect.center[0]
@@ -158,7 +164,7 @@ class Mp40Blast(Blast):
     def __init__(self, owner, direction):
         super().__init__(owner)
         self.image = pygame.Surface([10, 10])
-        self.image.fill(Color.RED.value)
+        self.image.fill(Color.BLACK.value)
         # self.correctionimage(direction)
         self.rect = self.image.get_rect()
         self.rect.x = self.owner.rect.center[0]

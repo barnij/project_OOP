@@ -2,7 +2,6 @@ import pygame
 from settings import ARENAWIDTH, ARENAHEIGHT, ARENAWIDTH_Q, ARENAHEIGHT_Q
 from enums import Direction
 from otherfunctions import rot_center
-from textures import img
 
 
 class Character(pygame.sprite.Sprite):

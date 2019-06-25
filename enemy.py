@@ -36,7 +36,7 @@ class Enemy1(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image = self.org_image = img.enemy1
-        self.hp = 500
+        self.hp = 100
         self.selectedgun = Pistol(0, 0)
         self.period = 2000
         self.pointsdamage = 5
@@ -47,7 +47,7 @@ class Enemy2(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image = self.org_image = img.enemy2
-        self.hp = 1000
+        self.hp = 300
         self.selectedgun = Tompson(0, 0)
         self.period = 500
         self.pointsdamage = 7
@@ -58,7 +58,7 @@ class Enemy3(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image = self.org_image = img.enemy3
-        self.hp = 1500
+        self.hp = 600
         self.selectedgun = Mp40(0, 0)
         self.selectedgun.blast.speed = 12
         self.period = 500
